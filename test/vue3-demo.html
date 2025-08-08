@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>String Case Utils - Vue 3 示例</title>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="../dist/umd/string-case-utils.min.js"></script>
+    <script>
+        // 等待脚本完全加载
+        window.addEventListener('load', function () {
+            console.log('页面加载完成');
+            console.log('StringCaseUtils:', window.StringCaseUtils);
+            console.log('StringCaseUtils 类型:', typeof window.StringCaseUtils);
+
+            if (window.StringCaseUtils) {
+                console.log('toCamelCase 类型:', typeof window.StringCaseUtils.toCamelCase);
+                console.log('可用方法:', Object.getOwnPropertyNames(window.StringCaseUtils));
+            }
+        });
+    </script>
+    <style>
+        body {
+            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f7;
+        }
+
+        .app {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: #1d1d1f;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .section {
+            margin-bottom: 24px;
+            padding: 16px;
+            background: #f6f6f6;
+            border-radius: 8px;
+        }
+
+        .section h3 {
+            color: #333;
+            margin-top: 0;
+            margin-bottom: 16px;
+        }
+
+        .input-group {
+            margin-bottom: 16px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 4px;
+            font-weight: 500;
+            color: #333;
+        }
+
+        input,
+        select,
+        textarea {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+
+        button {
+            background: #007aff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            margin: 4px;
+        }
+
+        button:hover {
+            background: #0056cc;
+        }
+
+        .result {
+            background: #e8f5e8;
+            padding: 12px;
+            border-radius: 6px;
+            font-family: 'SF Mono', Monaco, monospace;
+            font-size: 14px;
+            margin-top: 12px;
+            white-space: pre-wrap;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .demo-card {
+            background: white;
+            padding: 16px;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .demo-card h4 {
+            margin-top: 0;
+            color: #007aff;
+        }
+
+        .options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .status {
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+            margin-bottom: 16px;
+        }
+
+        .status.success {
+            background: #e8f5e8;
+            color: #2d7d2d;
+        }
+
+        .status.error {
+            background: #ffeaea;
+            color: #d63031;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <div class="app">
+            <h1>🚀 String Case Utils × Vue 3</h1>
+
+            <div class="status" :class="libraryStatus.type">
+                {{ libraryStatus.message }}
+            </div>
+
+            <div class="grid">
+                <!-- 字符串转换器 -->
+                <div class="section">
+                    <h3>🔤 字符串转换器</h3>
+                    <div class="input-group">
+                        <label>输入字符串:</label>
+                        <input v-model="stringInput" placeholder="例如: helloWorldExample" @input="updateStringResults" />
+                    </div>
+                    <div class="result" v-if="stringResults">
+                        原始: {{ stringInput }}
+                        驼峰: {{ stringResults.camel }}
+                        帕斯卡: {{ stringResults.pascal }}
+                        蛇形: {{ stringResults.snake }}
+                        大写蛇形: {{ stringResults.screamingSnake }}
+                        短横线: {{ stringResults.kebab }}
+                        列车: {{ stringResults.train }}
+                        点分: {{ stringResults.dot }}
+                    </div>
+                </div>
+
+                <!-- 对象转换器 -->
+                <div class="section">
+                    <h3>🔄 对象键名转换器</h3>
+                    <div class="input-group">
+                        <label>JSON 对象:</label>
+                        <textarea v-model="objectInput" rows="4" placeholder="输入 JSON 对象"
+                            @input="updateObjectResults"></textarea>
+                    </div>
+
+                    <div class="options">
+                        <div class="input-group">
+                            <label>转换风格:</label>
+                            <select v-model="objectOptions.caseStyle" @change="updateObjectResults">
+                                <option value="camel">驼峰 (camelCase)</option>
+                                <option value="pascal">帕斯卡 (PascalCase)</option>
+                                <option value="snake">蛇形 (snake_case)</option>
+                                <option value="screamingSnake">大写蛇形 (SNAKE_CASE)</option>
+                                <option value="kebab">短横线 (kebab-case)</option>
+                                <option value="train">列车 (Train-Case)</option>
+                                <option value="dot">点分 (dot.case)</option>
+                            </select>
+                        </div>
+
+                        <div class="input-group">
+                            <label>添加前缀:</label>
+                            <input v-model="objectOptions.prefix" placeholder="api_" @input="updateObjectResults" />
+                        </div>
+
+                        <div class="input-group">
+                            <label>添加后缀:</label>
+                            <input v-model="objectOptions.suffix" placeholder="_field" @input="updateObjectResults" />
+                        </div>
+
+                        <div class="input-group">
+                            <label>移除前缀:</label>
+                            <input v-model="objectOptions.prefixToRemove" placeholder="old_"
+                                @input="updateObjectResults" />
+                        </div>
+                    </div>
+
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="deep" v-model="objectOptions.deep" @change="updateObjectResults" />
+                        <label for="deep">深度转换嵌套对象</label>
+                    </div>
+
+                    <div class="result" v-if="objectResults">
+                        {{ objectResults }}
+                    </div>
+                </div>
+            </div>
+
+            <!-- 实际应用示例 -->
+            <div class="section">
+                <h3>🎯 Vue 3 实际应用示例</h3>
+
+                <div class="grid">
+                    <div class="demo-card">
+                        <h4>API 响应数据转换</h4>
+                        <p>模拟后端返回的蛇形命名数据转换为前端使用的驼峰命名</p>
+                        <button @click="demoApiResponse">运行示例</button>
+                        <div class="result" v-if="apiDemo">{{ apiDemo }}</div>
+                    </div>
+
+                    <div class="demo-card">
+                        <h4>表单数据处理</h4>
+                        <p>将表单数据转换为不同命名风格以适配不同 API</p>
+                        <button @click="demoFormData">运行示例</button>
+                        <div class="result" v-if="formDemo">{{ formDemo }}</div>
+                    </div>
+
+                    <div class="demo-card">
+                        <h4>配置文件转换</h4>
+                        <p>配置文件格式转换，支持不同环境的命名约定</p>
+                        <button @click="demoConfig">运行示例</button>
+                        <div class="result" v-if="configDemo">{{ configDemo }}</div>
+                    </div>
+
+                    <div class="demo-card">
+                        <h4>组件Props转换</h4>
+                        <p>组件属性命名风格转换</p>
+                        <button @click="demoProps">运行示例</button>
+                        <div class="result" v-if="propsDemo">{{ propsDemo }}</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Vue Composition API 示例 -->
+            <div class="section">
+                <h3>⚡ Vue 3 Composition API 集成</h3>
+                <pre class="result">
+// 在 Vue 3 项目中使用
+import { ref, computed } from 'vue'
+import { StringCaseUtils } from 'string-case-utils'
+
+export default {
+  setup() {
+    const rawData = ref({
+      user_name: 'Alice',
+      user_email: 'alice@example.com'
+    })
+    
+    // 响应式转换
+    const camelCaseData = computed(() => {
+      return StringCaseUtils.convertObjectKeys(rawData.value, {
+        caseStyle: 'camel'
+      })
+    })
+    
+    return {
+      rawData,
+      camelCaseData
+    }
+  }
+}
+                </pre>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const { createApp, ref, computed, onMounted } = Vue;
+
+        createApp({
+            setup() {
+                // 响应式数据
+                const stringInput = ref('helloWorldExample');
+                const objectInput = ref(JSON.stringify({
+                    user_name: 'Alice',
+                    user_age: 30,
+                    nested_data: {
+                        user_id: 'abc123',
+                        created_at: '2023-01-01'
+                    }
+                }, null, 2));
+
+                const objectOptions = ref({
+                    caseStyle: 'camel',
+                    prefix: '',
+                    suffix: '',
+                    prefixToRemove: '',
+                    deep: true
+                });
+
+                // 库状态检查
+                const libraryStatus = ref({
+                    type: 'success',
+                    message: '✅ String Case Utils 已成功加载并与 Vue 3 集成'
+                });
+
+                // 结果数据
+                const stringResults = ref(null);
+                const objectResults = ref(null);
+                const apiDemo = ref('');
+                const formDemo = ref('');
+                const configDemo = ref('');
+                const propsDemo = ref('');
+
+                // 字符串转换方法
+                const updateStringResults = () => {
+                    if (!stringInput.value.trim()) {
+                        stringResults.value = null;
+                        return;
+                    }
+
+                    try {
+                        stringResults.value = {
+                            camel: StringCaseUtils.toCamelCase(stringInput.value),
+                            pascal: StringCaseUtils.toPascalCase(stringInput.value),
+                            snake: StringCaseUtils.toSnakeCase(stringInput.value),
+                            screamingSnake: StringCaseUtils.toScreamingSnakeCase(stringInput.value),
+                            kebab: StringCaseUtils.toKebabCase(stringInput.value),
+                            train: StringCaseUtils.toTrainCase(stringInput.value),
+                            dot: StringCaseUtils.toDotCase(stringInput.value)
+                        };
+                    } catch (error) {
+                        libraryStatus.value = {
+                            type: 'error',
+                            message: `❌ 字符串转换错误: ${error.message}`
+                        };
+                    }
+                };
+
+                // 对象转换方法
+                const updateObjectResults = () => {
+                    if (!objectInput.value.trim()) {
+                        objectResults.value = null;
+                        return;
+                    }
+
+                    try {
+                        const obj = JSON.parse(objectInput.value);
+                        const converted = StringCaseUtils.convertObjectKeys(obj, objectOptions.value);
+                        objectResults.value = JSON.stringify(converted, null, 2);
+                    } catch (error) {
+                        objectResults.value = `错误: ${error.message}`;
+                    }
+                };
+
+                // 示例方法
+                const demoApiResponse = () => {
+                    const apiResponse = {
+                        user_id: 123,
+                        user_name: 'John Doe',
+                        created_at: '2023-01-01',
+                        user_profile: {
+                            first_name: 'John',
+                            last_name: 'Doe',
+                            email_address: 'john@example.com'
+                        }
+                    };
+
+                    const converted = StringCaseUtils.convertObjectKeys(apiResponse, {
+                        caseStyle: 'camel',
+                        deep: true
+                    });
+
+                    apiDemo.value = `// 后端 API 响应\n${JSON.stringify(apiResponse, null, 2)}\n\n// 转换后的前端数据\n${JSON.stringify(converted, null, 2)}`;
+                };
+
+                const demoFormData = () => {
+                    const formData = {
+                        firstName: 'Alice',
+                        lastName: 'Smith',
+                        emailAddress: 'alice@example.com',
+                        phoneNumber: '123-456-7890'
+                    };
+
+                    const converted = StringCaseUtils.convertObjectKeys(formData, {
+                        caseStyle: 'snake'
+                    });
+
+                    formDemo.value = `// 前端表单数据\n${JSON.stringify(formData, null, 2)}\n\n// 后端 API 格式\n${JSON.stringify(converted, null, 2)}`;
+                };
+
+                const demoConfig = () => {
+                    const config = {
+                        database_host: 'localhost',
+                        database_port: 5432,
+                        api_settings: {
+                            rate_limit: 100,
+                            timeout_seconds: 30
+                        }
+                    };
+
+                    const converted = StringCaseUtils.convertObjectKeys(config, {
+                        caseStyle: 'camel',
+                        deep: true
+                    });
+
+                    configDemo.value = `// 配置文件 (snake_case)\n${JSON.stringify(config, null, 2)}\n\n// JavaScript 对象 (camelCase)\n${JSON.stringify(converted, null, 2)}`;
+                };
+
+                const demoProps = () => {
+                    const componentProps = {
+                        'data-test-id': 'user-card',
+                        'aria-label': 'User Information',
+                        'class-name': 'user-card-component'
+                    };
+
+                    const converted = StringCaseUtils.convertObjectKeys(componentProps, {
+                        caseStyle: 'camel'
+                    });
+
+                    propsDemo.value = `// HTML 属性风格\n${JSON.stringify(componentProps, null, 2)}\n\n// Vue/React Props 风格\n${JSON.stringify(converted, null, 2)}`;
+                };
+
+                // 初始化
+                onMounted(() => {
+                    try {
+                        if (typeof StringCaseUtils === 'undefined') {
+                            libraryStatus.value = {
+                                type: 'error',
+                                message: '❌ String Case Utils 未能正确加载'
+                            };
+                            return;
+                        }
+
+                        // 检查关键方法是否存在
+                        if (typeof StringCaseUtils.toCamelCase !== 'function') {
+                            libraryStatus.value = {
+                                type: 'error',
+                                message: `❌ StringCaseUtils.toCamelCase 不是函数，类型: ${typeof StringCaseUtils.toCamelCase}`
+                            };
+                            return;
+                        }
+
+                        if (typeof StringCaseUtils.convertObjectKeys !== 'function') {
+                            libraryStatus.value = {
+                                type: 'error',
+                                message: `❌ StringCaseUtils.convertObjectKeys 不是函数，类型: ${typeof StringCaseUtils.convertObjectKeys}`
+                            };
+                            return;
+                        }
+
+                        // 测试基本功能
+                        const testResult = StringCaseUtils.toCamelCase('test_string');
+                        if (testResult !== 'testString') {
+                            throw new Error(`基本功能测试失败: 期望 'testString'，得到 '${testResult}'`);
+                        }
+
+                        updateStringResults();
+                        updateObjectResults();
+
+                        libraryStatus.value = {
+                            type: 'success',
+                            message: '✅ String Case Utils 与 Vue 3 完美集成！所有功能正常工作。'
+                        };
+                    } catch (error) {
+                        libraryStatus.value = {
+                            type: 'error',
+                            message: `❌ 集成测试失败: ${error.message}`
+                        };
+                        console.error('详细错误信息:', error);
+                        console.log('StringCaseUtils 对象:', StringCaseUtils);
+                        console.log('可用属性:', Object.getOwnPropertyNames(StringCaseUtils || {}));
+                    }
+                });
+
+                return {
+                    // 响应式数据
+                    stringInput,
+                    objectInput,
+                    objectOptions,
+                    libraryStatus,
+                    stringResults,
+                    objectResults,
+                    apiDemo,
+                    formDemo,
+                    configDemo,
+                    propsDemo,
+
+                    // 方法
+                    updateStringResults,
+                    updateObjectResults,
+                    demoApiResponse,
+                    demoFormData,
+                    demoConfig,
+                    demoProps
+                };
+            }
+        }).mount('#app');
+    </script>
+</body>
+
+</html>

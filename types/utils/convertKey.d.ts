@@ -1,0 +1,9 @@
+export declare function splitWords(str: string): string[];
+export declare function capitalize(word: string): string;
+export declare function toCamelCase(str: string): string;
+export declare function toPascalCase(str: string): string;
+export declare function toSnakeCase(str: string): string;
+export declare function toScreamingSnakeCase(str: string): string;
+export declare function toKebabCase(str: string): string;
+export declare function toTrainCase(str: string): string;
+export declare function toDotCase(str: string): string;

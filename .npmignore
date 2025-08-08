@@ -1,0 +1,53 @@
+# Source files
+src/
+tsconfig*.json
+webpack.config.js
+scripts/
+
+# Test files  
+test/
+*.test.*
+*.spec.*
+
+# Demo and examples
+demo/
+examples/
+*.html
+
+# Development files
+.vscode/
+.idea/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Dependencies
+node_modules/
+
+# Build artifacts (keep only dist/)
+coverage/
+.nyc_output/
+
+# Git
+.git/
+.gitignore
+
+# Others
+*.tgz
+*.tar.gz
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+README.md~

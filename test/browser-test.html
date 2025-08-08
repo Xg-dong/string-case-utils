@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>String Case Utils - 浏览器测试</title>
+    <style>
+        body {
+            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f7;
+        }
+
+        .container {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: #1d1d1f;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .test-section {
+            margin-bottom: 24px;
+            padding: 16px;
+            background: #f6f6f6;
+            border-radius: 8px;
+        }
+
+        .test-section h3 {
+            color: #333;
+            margin-top: 0;
+        }
+
+        .result {
+            background: #e8f5e8;
+            padding: 12px;
+            border-radius: 6px;
+            font-family: 'SF Mono', Monaco, monospace;
+            font-size: 14px;
+            margin: 8px 0;
+        }
+
+        .error {
+            background: #ffeaea;
+            color: #d63031;
+        }
+
+        button {
+            background: #007aff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 5px;
+        }
+
+        button:hover {
+            background: #0056cc;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>🛠️ String Case Utils 浏览器测试</h1>
+
+        <div class="test-section">
+            <h3>📝 字符串转换测试</h3>
+            <button onclick="testStringConversions()">运行字符串转换测试</button>
+            <div id="string-results"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>🔄 对象键名转换测试</h3>
+            <button onclick="testObjectConversions()">运行对象转换测试</button>
+            <div id="object-results"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>🎯 综合功能测试</h3>
+            <button onclick="testAdvancedFeatures()">运行高级功能测试</button>
+            <div id="advanced-results"></div>
+        </div>
+    </div>
+
+    <!-- 引入 UMD 构建 -->
+    <script src="../dist/umd/string-case-utils.min.js"></script>
+
+    <script>
+        function addResult(containerId, label, result, isError = false) {
+            const container = document.getElementById(containerId);
+            const div = document.createElement('div');
+            div.className = isError ? 'result error' : 'result';
+            div.innerHTML = `<strong>${label}:</strong> ${JSON.stringify(result, null, 2)}`;
+            container.appendChild(div);
+        }
+
+        function clearResults(containerId) {
+            document.getElementById(containerId).innerHTML = '';
+        }
+
+        function testStringConversions() {
+            clearResults('string-results');
+
+            try {
+                const input = "helloWorldExample";
+
+                addResult('string-results', '输入', input);
+                addResult('string-results', 'toCamelCase', StringCaseUtils.toCamelCase(input));
+                addResult('string-results', 'toPascalCase', StringCaseUtils.toPascalCase(input));
+                addResult('string-results', 'toSnakeCase', StringCaseUtils.toSnakeCase(input));
+                addResult('string-results', 'toScreamingSnakeCase', StringCaseUtils.toScreamingSnakeCase(input));
+                addResult('string-results', 'toKebabCase', StringCaseUtils.toKebabCase(input));
+                addResult('string-results', 'toTrainCase', StringCaseUtils.toTrainCase(input));
+                addResult('string-results', 'toDotCase', StringCaseUtils.toDotCase(input));
+
+                addResult('string-results', '✅ 测试状态', '所有字符串转换测试通过！');
+            } catch (error) {
+                addResult('string-results', '❌ 错误', error.message, true);
+            }
+        }
+
+        function testObjectConversions() {
+            clearResults('object-results');
+
+            try {
+                const testObj = {
+                    user_name: "Alice",
+                    user_age: 30,
+                    nested_info: {
+                        user_id: "abc123",
+                        created_at: "2023-01-01"
+                    }
+                };
+
+                addResult('object-results', '原始对象', testObj);
+
+                const camelResult = StringCaseUtils.convertObjectKeys(testObj, {
+                    caseStyle: "camel",
+                    deep: true
+                });
+                addResult('object-results', '转换为驼峰命名（深度）', camelResult);
+
+                const snakeResult = StringCaseUtils.convertObjectKeys(testObj, {
+                    caseStyle: "snake",
+                    prefix: "api_",
+                    deep: true
+                });
+                addResult('object-results', '添加前缀的蛇形命名', snakeResult);
+
+                addResult('object-results', '✅ 测试状态', '所有对象转换测试通过！');
+            } catch (error) {
+                addResult('object-results', '❌ 错误', error.message, true);
+            }
+        }
+
+        function testAdvancedFeatures() {
+            clearResults('advanced-results');
+
+            try {
+                // 测试前后缀处理
+                const objWithPrefixes = {
+                    old_user_name: "Bob",
+                    old_user_email: "bob@example.com"
+                };
+
+                const result1 = StringCaseUtils.convertObjectKeys(objWithPrefixes, {
+                    caseStyle: "camel",
+                    prefixToRemove: "old_",
+                    suffix: "_new"
+                });
+                addResult('advanced-results', '前缀移除 + 后缀添加', result1);
+
+                // 测试不同命名风格
+                const testCases = [
+                    { input: "hello-world-test", style: "pascal" },
+                    { input: "HelloWorldTest", style: "kebab" },
+                    { input: "hello_world_test", style: "train" },
+                    { input: "helloWorldTest", style: "dot" }
+                ];
+
+                testCases.forEach(testCase => {
+                    const obj = { test_key: testCase.input };
+                    const result = StringCaseUtils.convertObjectKeys(obj, {
+                        caseStyle: testCase.style
+                    });
+                    addResult('advanced-results', `${testCase.style} 风格转换`, result);
+                });
+
+                addResult('advanced-results', '✅ 测试状态', '所有高级功能测试通过！');
+            } catch (error) {
+                addResult('advanced-results', '❌ 错误', error.message, true);
+            }
+        }
+
+        // 页面加载时显示库信息
+        window.addEventListener('load', function () {
+            console.log('🎉 String Case Utils 已加载');
+            console.log('可用方法:', Object.getOwnPropertyNames(StringCaseUtils).filter(name => typeof StringCaseUtils[name] === 'function'));
+        });
+    </script>
+</body>
+
+</html>

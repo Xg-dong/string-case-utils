@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>UMD Test</title>
+</head>
+
+<body>
+    <h1>UMD Build Test</h1>
+    <div id="result"></div>
+
+    <script src="../dist/umd/string-case-utils.min.js"></script>
+    <script>
+        console.log('StringCaseUtils:', StringCaseUtils);
+        console.log('typeof StringCaseUtils:', typeof StringCaseUtils);
+        console.log('StringCaseUtils keys:', Object.keys(StringCaseUtils));
+
+        const resultDiv = document.getElementById('result');
+
+        try {
+            if (typeof StringCaseUtils === 'undefined') {
+                resultDiv.innerHTML = '❌ StringCaseUtils is undefined';
+            } else if (typeof StringCaseUtils.toCamelCase !== 'function') {
+                resultDiv.innerHTML = `❌ StringCaseUtils.toCamelCase is ${typeof StringCaseUtils.toCamelCase}`;
+                resultDiv.innerHTML += `<br>Available methods: ${Object.getOwnPropertyNames(StringCaseUtils)}`;
+            } else {
+                const result = StringCaseUtils.toCamelCase('hello_world');
+                resultDiv.innerHTML = `✅ Success: ${result}`;
+            }
+        } catch (error) {
+            resultDiv.innerHTML = `❌ Error: ${error.message}`;
+        }
+    </script>
+</body>
+
+</html>

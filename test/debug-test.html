@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Debug Test</title>
+</head>
+
+<body>
+    <h1>Debug StringCaseUtils</h1>
+    <div id="output"></div>
+
+    <script src="../dist/umd/string-case-utils.min.js"></script>
+    <script>
+        const output = document.getElementById('output');
+
+        function log(msg) {
+            output.innerHTML += msg + '<br>';
+            console.log(msg);
+        }
+
+        log('1. window 对象: ' + typeof window);
+        log('2. StringCaseUtils 存在: ' + (typeof StringCaseUtils !== 'undefined'));
+        log('3. StringCaseUtils 类型: ' + typeof StringCaseUtils);
+
+        if (typeof StringCaseUtils !== 'undefined') {
+            log('4. StringCaseUtils 构造函数: ' + typeof StringCaseUtils.constructor);
+            log('5. StringCaseUtils 原型: ' + typeof StringCaseUtils.prototype);
+            log('6. 所有属性: ' + Object.getOwnPropertyNames(StringCaseUtils));
+            log('7. toCamelCase 存在: ' + ('toCamelCase' in StringCaseUtils));
+            log('8. toCamelCase 类型: ' + typeof StringCaseUtils.toCamelCase);
+
+            if (typeof StringCaseUtils.toCamelCase === 'function') {
+                try {
+                    const result = StringCaseUtils.toCamelCase('hello_world');
+                    log('9. 测试结果: ' + result);
+                } catch (error) {
+                    log('9. 测试错误: ' + error.message);
+                }
+            }
+        } else {
+            log('4. StringCaseUtils 未定义');
+            log('5. window.StringCaseUtils: ' + typeof window.StringCaseUtils);
+            log('6. 全局变量: ' + Object.keys(window).filter(k => k.includes('String')));
+        }
+    </script>
+</body>
+
+</html>

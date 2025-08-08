@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Minimal Test</title>
+</head>
+
+<body>
+    <h1>最小化测试</h1>
+    <div id="result"></div>
+
+    <script src="../dist/umd/string-case-utils.min.js"></script>
+    <script>
+        setTimeout(() => {
+            const result = document.getElementById('result');
+
+            if (typeof StringCaseUtils !== 'undefined' && typeof StringCaseUtils.toCamelCase === 'function') {
+                const test = StringCaseUtils.toCamelCase('hello_world');
+                result.innerHTML = `✅ 成功: ${test}`;
+                result.style.color = 'green';
+            } else {
+                result.innerHTML = `❌ 失败: StringCaseUtils.toCamelCase 类型为 ${typeof (StringCaseUtils && StringCaseUtils.toCamelCase)}`;
+                result.style.color = 'red';
+            }
+        }, 100);
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Quick Test</title>
+</head>
+
+<body>
+    <h1>Quick Function Test</h1>
+    <div id="result"></div>
+
+    <script src="../dist/umd/string-case-utils.min.js"></script>
+    <script>
+        document.getElementById('result').innerHTML = `
+            <p>StringCaseUtils: ${typeof StringCaseUtils}</p>
+            <p>toCamelCase: ${typeof StringCaseUtils.toCamelCase}</p>
+            <p>Test result: ${StringCaseUtils.toCamelCase('hello_world')}</p>
+        `;
+    </script>
+</body>
+
+</html>
